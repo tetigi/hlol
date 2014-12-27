@@ -46,7 +46,7 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 
-executable grouch
+executable hlol
   -- .hs or .lhs file containing the Main module.
   main-is:             Main.hs
 
@@ -59,9 +59,12 @@ executable grouch
   -- Other library packages from which modules are imported.
   build-depends:    base >=4.6 && <4.7
                     ,aeson
+                    ,json
                     ,bytestring
                     ,containers
                     ,curl
+                    ,lens
+                    ,transformers
                     ,time
                     ,old-locale
                     ,iso8601-time

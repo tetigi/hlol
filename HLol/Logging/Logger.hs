@@ -1,4 +1,4 @@
-module Grouch.Logging.Logger (
+module HLol.Logging.Logger (
      withLogging
     ,lolInfo
     ,lolError
