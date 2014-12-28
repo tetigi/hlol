@@ -360,6 +360,7 @@ instance FromJSON ParticipantStats where
         v .: "wardsPlaced"<*>
         v .: "winner"
     parseJSON _ = mzero
+
 data Mastery = Mastery {
     _masteryId :: Int,
     _masteryRank :: Int
