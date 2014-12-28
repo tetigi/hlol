@@ -2,7 +2,7 @@ module HLol.API.MatchHistory (
     getMatchHistory
     ) where
 
-import HLol.Data (MatchSummary)
+import HLol.Data.MatchHistory (MatchSummary)
 import HLol.Network.Rest
 
 import Data.Aeson

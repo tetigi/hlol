@@ -3,7 +3,7 @@ module HLol.API.Match (
     getMatch
     ) where
 
-import HLol.Data (MatchDetail(..))
+import HLol.Data.Match (MatchDetail(..))
 import HLol.Network.Rest
 
 import Data.Aeson

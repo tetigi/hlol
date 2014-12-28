@@ -3,7 +3,13 @@ module Main where
 import HLol.API.MatchHistory
 import HLol.API.Match
 import HLol.API.Summoner
-import HLol.Data
+
+import qualified HLol.Data.Match as Match
+import qualified HLol.Data.Summoner as Summoner
+import qualified HLol.Data.MatchHistory as MatchHistory
+import qualified HLol.Data.Champion as Champion
+import qualified HLol.Data.Game as Game
+
 import HLol.Logging.Logger
 
 import Control.Concurrent (threadDelay)
@@ -18,23 +24,23 @@ main :: IO ()
 main = do
     putStrLn "Hello, world!"
     [tetigi] <- getByNames ["tetigi"]
-    withLogging $ gatherNames S.empty [tetigi^.summonerId]
+    withLogging $ gatherNames S.empty [tetigi^.Summoner.id]
 
 gatherNames :: S.Set Int -> [Int] -> IO ()
 gatherNames _ [] = error "No seed names provided!"
 gatherNames seen (n:ns) = do
     matches <- getMatchHistory n 5
-    matchDetails <- mapM (getMatch . (^.matchId)) matches
-    let players = concat $ map (map (^.player) . (^.participantIdentities)) matchDetails
+    matchDetails <- mapM (getMatch . (^.MatchHistory.matchId)) matches
+    let players = concat $ map (map (^.Match.player) . (^.Match.participantIdentities)) matchDetails
     (seen', names') <- logNames (seen, ns) players
     threadDelay 20000000
     gatherNames seen' names'
 
-logNames :: (S.Set Int, [Int]) -> [Player] -> IO (S.Set Int, [Int])
+logNames :: (S.Set Int, [Int]) -> [Match.Player] -> IO (S.Set Int, [Int])
 logNames = foldM add
     where
         add (ss, ns) p
-            | (p^.playerId) `S.notMember` ss = do
-                lolInfo tag $ (p^.playerName) ++ "," ++ show (p^.playerId)
-                return (S.insert (p^.playerId) ss, (p^.playerId):ns)
+            | (p^.Match.summonerId) `S.notMember` ss = do
+                lolInfo tag $ (p^.Match.summonerName) ++ "," ++ show (p^.Match.summonerId)
+                return (S.insert (p^.Match.summonerId) ss, (p^.Match.summonerId):ns)
             | otherwise = return (ss, ns)
