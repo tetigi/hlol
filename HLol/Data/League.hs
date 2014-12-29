@@ -34,7 +34,7 @@ data LeagueEntryDto = LeagueEntryDto {
     _miniSeries :: MiniSeriesDto,
     _playerOrTeamId :: String,
     _playerOrTeamName :: String,
-    _wins :: Int
+    _leagueWins :: Int
 } deriving (Eq, Show)
 
 makeLenses ''LeagueEntryDto

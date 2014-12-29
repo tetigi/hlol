@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
-module HLol.Data.LolStatus where
+module HLol.Data.Stats where
 
 import Control.Applicative
 import Control.Lens
@@ -140,9 +140,9 @@ instance FromJSON ChampionStatsDto where
         v .: "stats"
     parseJSON _ = mzero
 data RankedStatsDto = RankedStatsDto {
-    _champions :: [ChampionStatsDto],
-    _modifyDate :: Int,
-    _summonerId :: Int
+    _rankedChampions :: [ChampionStatsDto],
+    _rankedModifyDate :: Int,
+    _rankedSummonerId :: Int
 } deriving (Eq, Show)
 
 makeLenses ''RankedStatsDto
@@ -151,5 +151,37 @@ instance FromJSON RankedStatsDto where
     parseJSON (Object v) = RankedStatsDto <$>
         v .: "champions"<*>
         v .: "modifyDate"<*>
+        v .: "summonerId"
+    parseJSON _ = mzero
+
+data PlayerStatsSummaryDto = PlayerStatsSummaryDto {
+    _aggregatedStats :: AggregatedStatsDto,
+    _losses :: Int,
+    _modifyDate :: Int,
+    _playerStatSummaryType :: String,
+    _wins :: Int
+} deriving (Eq, Show)
+
+makeLenses ''PlayerStatsSummaryDto
+
+instance FromJSON PlayerStatsSummaryDto where
+    parseJSON (Object v) = PlayerStatsSummaryDto <$>
+        v .: "aggregatedStats"<*>
+        v .: "losses"<*>
+        v .: "modifyDate"<*>
+        v .: "playerStatSummaryType"<*>
+        v .: "wins"
+    parseJSON _ = mzero
+
+data PlayerStatsSummaryListDto = PlayerStatsSummaryListDto {
+    _playerStatSummaries :: [PlayerStatsSummaryDto],
+    _summonerId :: Int
+} deriving (Eq, Show)
+
+makeLenses ''PlayerStatsSummaryListDto
+
+instance FromJSON PlayerStatsSummaryListDto where
+    parseJSON (Object v) = PlayerStatsSummaryListDto <$>
+        v .: "playerStatSummaries"<*>
         v .: "summonerId"
     parseJSON _ = mzero

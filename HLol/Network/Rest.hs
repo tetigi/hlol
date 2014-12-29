@@ -8,6 +8,7 @@ module HLol.Network.Rest (
 import Network.Curl ( curlGetString_ )
 import Network.Curl.Code ( CurlCode( CurlOK ) )
 
+import Data.Aeson
 import Data.List (intercalate)
 import Data.ByteString.Lazy (ByteString)
 

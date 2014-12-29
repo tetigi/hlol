@@ -3,7 +3,15 @@ module Main where
 import HLol.API.MatchHistory
 import HLol.API.Match
 import HLol.API.Summoner
+import HLol.API.Champion
+import HLol.API.Game
+import HLol.API.League
+import HLol.API.LolStaticData
+import HLol.API.LolStatus
+import HLol.API.Stats
+import HLol.API.Team
 
+{-
 import qualified HLol.Data.Match as Match
 import qualified HLol.Data.Summoner as Summoner
 import qualified HLol.Data.MatchHistory as MatchHistory
@@ -19,10 +27,13 @@ import qualified Data.Set as S
 
 tag :: String
 tag = "Main"
+-}
 
 main :: IO ()
 main = do
     putStrLn "Hello, world!"
+
+{-
     [tetigi] <- getByNames ["tetigi"]
     withLogging $ gatherNames S.empty [tetigi^.Summoner.id]
 
@@ -44,3 +55,4 @@ logNames = foldM add
                 lolInfo tag $ (p^.Match.summonerName) ++ "," ++ show (p^.Match.summonerId)
                 return (S.insert (p^.Match.summonerId) ss, (p^.Match.summonerId):ns)
             | otherwise = return (ss, ns)
+-}

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 
-module HLol.Data.Summoner where
+module HLol.Data.Team where
 
 import Control.Applicative
 import Control.Lens
@@ -82,20 +82,20 @@ instance FromJSON MatchHistorySummaryDto where
         v .: "win"
     parseJSON _ = mzero
 data TeamDto = TeamDto {
-    _createDate :: Int,
-    _fullId :: String,
-    _lastGameDate :: Int,
-    _lastJoinDate :: Int,
-    _lastJoinedRankedTeamQueueDate :: Int,
-    _matchHistory :: [MatchHistorySummaryDto],
-    _modifyDate :: Int,
-    _name :: String,
-    _roster :: RosterDto,
-    _secondLastJoinDate :: Int,
-    _status :: String,
-    _tag :: String,
-    _teamStatDetails :: [TeamStatDetailDto],
-    _thirdLastJoinDate :: Int
+    _teamCreateDate :: Int,
+    _teamFullId :: String,
+    _teamLastGameDate :: Int,
+    _teamLastJoinDate :: Int,
+    _teamLastJoinedRankedTeamQueueDate :: Int,
+    _teamMatchHistory :: [MatchHistorySummaryDto],
+    _teamModifyDate :: Int,
+    _teamName :: String,
+    _teamRoster :: RosterDto,
+    _teamSecondLastJoinDate :: Int,
+    _teamStatus :: String,
+    _teamTag :: String,
+    _teamTeamStatDetails :: [TeamStatDetailDto],
+    _teamThirdLastJoinDate :: Int
 } deriving (Eq, Show)
 
 makeLenses ''TeamDto

@@ -8,13 +8,13 @@ import HLol.Network.Rest
 import Data.Aeson
 import qualified Data.Map as M
 
-requestMatch :: Bool -> IO [ChampionDto]
-requestMatch freeToPlay = do
+requestChampions :: Bool -> IO (M.Map String ChampionDto)
+requestChampions freeToPlay = do
     let url = "/v1.2/champion"
     resp <- sendAPIRequest url [("freeToPlay", show freeToPlay)]
     case eitherDecode resp of
         Right r -> return r
         Left e  -> error e
 
-getMatch :: Int -> IO ChampionDto
-getMatch = fmap (M.! "champions") . requestMatch
+getChampions :: Bool -> IO ChampionDto
+getChampions = fmap (M.! "champions") . requestChampions
