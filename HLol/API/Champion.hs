@@ -1,4 +1,3 @@
-{-# LANGUAGE OverloadedStrings #-}
 module HLol.API.Champion (
     getChampions
     ) where

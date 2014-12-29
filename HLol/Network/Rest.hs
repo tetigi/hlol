@@ -1,6 +1,8 @@
 module HLol.Network.Rest (
+    get,
     sendAPIRequest,
-    LolRequest
+    LolRequest,
+    Region(..)
     ) where
 
 import Network.Curl ( curlGetString_ )
@@ -22,6 +24,13 @@ base_url :: Region -> String
 base_url r = let rs = show r in "https://" ++ rs ++ ".api.pvp.net/api/lol/" ++ rs
 
 type LolRequest = String
+
+get :: (FromJSON a) => String -> IO a
+get url = do
+    resp <- sendAPIRequest url []
+    case eitherDecode resp of
+        Right r -> return r
+        Left e  -> error e
 
 sendAPIRequest :: LolRequest -> [(String, String)] -> IO ByteString
 sendAPIRequest url opts = do
