@@ -45,10 +45,33 @@ build-type:          Simple
 -- Constraint on the version of Cabal needed to build this package.
 cabal-version:       >=1.10
 
+Test-Suite test-hlol
+  type:             exitcode-stdio-1.0
+  main-is:          Main.hs
+  hs-source-dirs:   test src
+  build-depends:    base
+                    ,HUnit
+                    ,test-framework
+                    ,test-framework-hunit
+                    ,aeson
+                    ,json
+                    ,bytestring
+                    ,containers
+                    ,curl
+                    ,lens
+                    ,transformers
+                    ,time
+                    ,old-locale
+                    ,iso8601-time
+                    ,random
+                    ,MissingH
+                    ,text
+  default-language:    Haskell2010
 
 executable hlol
   -- .hs or .lhs file containing the Main module.
-  main-is:             Main.hs
+  hs-source-dirs:   src
+  main-is:          Main.hs
 
   -- Modules included in this executable, other than Main.
   -- other-modules:
@@ -57,7 +80,7 @@ executable hlol
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:    base >=4.6 && <4.7
+  build-depends:    base
                     ,aeson
                     ,json
                     ,bytestring
