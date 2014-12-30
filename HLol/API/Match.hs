@@ -6,15 +6,5 @@ module HLol.API.Match (
 import HLol.Data.Match (MatchDetail(..))
 import HLol.Network.Rest
 
-import Data.Aeson
-
-requestMatch :: Int -> IO MatchDetail
-requestMatch matchId = do
-    let url = "/v2.2/match/" ++ show matchId
-    resp <- sendAPIRequest url []
-    case eitherDecode resp of
-        Right r -> return r
-        Left e  -> error e
-
-getMatch :: Int -> IO MatchDetail
-getMatch = requestMatch
+getMatch :: Int -> IO (Either LolError MatchDetail)
+getMatch matchId = get $ "/v2.2/match/" ++ show matchId

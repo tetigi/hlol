@@ -18,41 +18,41 @@ import HLol.Data.LolStaticData
 import HLol.Data.Champion
 import HLol.Network.Rest
 
-getChampions :: IO ChampionListDto
+getChampions :: IO (Either LolError ChampionListDto)
 getChampions = get "/v1.2/champion"
 
-getChampion :: Int -> IO ChampionDto
+getChampion :: Int -> IO (Either LolError ChampionDto)
 getChampion champId = get $ "/v1.2/champion/" ++ show champId
 
-getItems :: IO ItemListDto
+getItems :: IO (Either LolError ItemListDto)
 getItems = get "/v1.2/item"
 
-getItem :: Int -> IO ItemDto
+getItem :: Int -> IO (Either LolError ItemDto)
 getItem item = get $ "/v1.2/item/" ++ show item
 
-getLanguageData :: IO [String]
+getLanguageData :: IO (Either LolError [String])
 getLanguageData = get "/v1.2/languages"
 
-getMasteries :: IO MasteryListDto
+getMasteries :: IO (Either LolError MasteryListDto)
 getMasteries = get "/v1.2/mastery"
 
-getMastery :: Int -> IO MasteryDto
+getMastery :: Int -> IO (Either LolError MasteryDto)
 getMastery master = get $ "/v1.2/mastery/" ++ show master
 
-getRealmData :: IO RealmDto
+getRealmData :: IO (Either LolError RealmDto)
 getRealmData = get "/v1.2/realm"
 
-getRunes :: IO RuneListDto
+getRunes :: IO (Either LolError RuneListDto)
 getRunes = get "/v1.2/rune"
 
-getRune :: Int -> IO RuneDto
+getRune :: Int -> IO (Either LolError RuneDto)
 getRune runeID = get $ "/v1.2/rune/" ++ show runeID
 
-getSummonerSpells :: IO SummonerSpellListDto
+getSummonerSpells :: IO (Either LolError SummonerSpellListDto)
 getSummonerSpells = get "/v1.2/summoner-spell"
 
-getSummonerSpell :: Int -> IO SummonerSpellDto
+getSummonerSpell :: Int -> IO (Either LolError SummonerSpellDto)
 getSummonerSpell spellId = get $ "/v1.2/summoner-spell/" ++ show spellId
 
-getVersionData :: IO [String]
+getVersionData :: IO (Either LolError [String])
 getVersionData = get "/v1.2/versions"

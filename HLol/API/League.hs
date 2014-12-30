@@ -12,21 +12,21 @@ import HLol.Network.Rest
 import Data.List (intercalate)
 import qualified Data.Map as M
 
-getLeagues :: [Int] -> IO (M.Map String [LeagueDto])
+getLeagues :: [Int] -> IO (Either LolError (M.Map String [LeagueDto]))
 getLeagues summonerIds =
     get $ "/v2.5/league/by-summoner/" ++ (intercalate "," $ map show summonerIds)
 
-getLeagueEntries :: [Int] -> IO (M.Map String [LeagueDto])
+getLeagueEntries :: [Int] -> IO (Either LolError (M.Map String [LeagueDto]))
 getLeagueEntries summonerIds =
     get $ "/v2.5/league/by-summoner/" ++ (intercalate "," $ map show summonerIds) ++ "/entry"
 
-getLeaguesByTeam :: [Int] -> IO (M.Map String [LeagueDto])
+getLeaguesByTeam :: [Int] -> IO (Either LolError (M.Map String [LeagueDto]))
 getLeaguesByTeam teamIds =
     get $ "/v2.5/league/by-team/" ++ (intercalate "," $ map show teamIds)
 
-getLeagueEntriesByTeam :: [Int] -> IO (M.Map String [LeagueDto])
+getLeagueEntriesByTeam :: [Int] -> IO (Either LolError (M.Map String [LeagueDto]))
 getLeagueEntriesByTeam teamIds =
     get $ "/v2.5/league/by-team/" ++ (intercalate "," $ map show teamIds) ++ "/entry"
 
-getChallengerLeagues :: IO LeagueDto
+getChallengerLeagues :: IO (Either LolError LeagueDto)
 getChallengerLeagues = get "/v2.5/league/challenger"

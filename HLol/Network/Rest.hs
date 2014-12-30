@@ -1,16 +1,28 @@
 module HLol.Network.Rest (
     get,
     sendAPIRequest,
+    sendAPIRequest',
     LolRequest,
+    LolError,
     Region(..)
     ) where
 
-import Network.Curl ( curlGetString_ )
-import Network.Curl.Code ( CurlCode( CurlOK ) )
+import HLol.Utils
+
+import Network.Curl
 
 import Data.Aeson
 import Data.List (intercalate)
 import Data.ByteString.Lazy (ByteString)
+
+data LolError =
+    BadRequest |
+    Unauthorized |
+    StatsDataNotFound |
+    RateLimitExceeded |
+    InternalServerError |
+    ServiceUnavailable
+    deriving (Show, Eq)
 
 data Region = EUW | NA
 
@@ -26,18 +38,37 @@ base_url r = let rs = show r in "https://" ++ rs ++ ".api.pvp.net/api/lol/" ++ r
 
 type LolRequest = String
 
-get :: (FromJSON a) => String -> IO a
+get :: (FromJSON a) => String -> IO (Either LolError a)
 get url = do
     resp <- sendAPIRequest url []
-    case eitherDecode resp of
-        Right r -> return r
-        Left e  -> error e
+    return $ mapR (getRight . eitherDecode) resp
 
-sendAPIRequest :: LolRequest -> [(String, String)] -> IO ByteString
+sendAPIRequest :: LolRequest -> [(String, String)] -> IO (Either LolError ByteString)
 sendAPIRequest url opts = do
     let opts_str = intercalate "&" . map (\(x, y) -> x ++ "=" ++ y) $ ("api_key", api_key) : opts
     let url_str = base_url EUW ++ url ++ "?" ++ opts_str
-    (code, output) <- curlGetString_ url_str []
-    case code of
-        CurlOK  -> return output
-        _       -> error $ "Error: Could not get services. Got response: " ++ show code ++ "\n" ++ show output
+    resp <- curlGetResponse_ url_str [] :: IO (CurlResponse_ [(String, String)] ByteString)
+    case respCurlCode resp of
+        CurlOK  ->  return $ Right $ respBody resp
+        _       ->  case respStatus resp of
+                        400 -> error $ show BadRequest
+                        401 -> error $ show Unauthorized
+                        404 -> error $ show StatsDataNotFound
+                        429 -> error $ show RateLimitExceeded
+                        500 -> error $ show InternalServerError
+                        503 -> error $ show ServiceUnavailable
+                        e   -> error $ "Unknown error code: " ++ show e
+
+sendAPIRequest' :: LolRequest -> IO (Either LolError ByteString)
+sendAPIRequest' url_str = do
+    resp <- curlGetResponse_ url_str [] :: IO (CurlResponse_ [(String, String)] ByteString)
+    case respCurlCode resp of
+        CurlOK  ->  return $ Right $ respBody resp
+        _       ->  case respStatus resp of
+                        400 -> error $ show BadRequest
+                        401 -> error $ show Unauthorized
+                        404 -> error $ show StatsDataNotFound
+                        429 -> error $ show RateLimitExceeded
+                        500 -> error $ show InternalServerError
+                        503 -> error $ show ServiceUnavailable
+                        e   -> error $ "Unknown error code: " ++ show e
