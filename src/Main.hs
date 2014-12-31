@@ -1,5 +1,6 @@
 module Main where
 
+{-
 import HLol.API.MatchHistory
 import HLol.API.Match
 import HLol.API.Summoner
@@ -11,7 +12,6 @@ import HLol.API.LolStatus
 import HLol.API.Stats
 import HLol.API.Team
 
-{-
 import qualified HLol.Data.Match as Match
 import qualified HLol.Data.Summoner as Summoner
 import qualified HLol.Data.MatchHistory as MatchHistory

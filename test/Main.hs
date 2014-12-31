@@ -33,7 +33,7 @@ assertRight e = unless (isRight e) (HU.assertFailure "Expected Right but got Lef
 
 -- setup
 tetigi :: Int
-tetigi = undefined -- TODO Get my ID
+tetigi = 32569275
 
 -- champion-v1.2 ------------------------
 testChampionsGet = buildTest $ fmap (testCase "championsGet" . assertRight) $ Champion.getChampions False
@@ -57,7 +57,7 @@ testChallengerGet = buildTest $ fmap (testCase "leagueChallengerGet" . assertRig
 
 -- lol-static-data-v1.2 ----------------
 testChamp :: Int
-testChamp = undefined
+testChamp = 266
 
 testItem :: Int
 testItem = undefined

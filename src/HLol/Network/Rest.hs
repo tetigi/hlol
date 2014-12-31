@@ -2,6 +2,7 @@ module HLol.Network.Rest (
     get,
     sendAPIRequest,
     sendAPIRequest',
+    sendAPIRequest_,
     LolRequest,
     LolError,
     Region(..)
@@ -43,10 +44,10 @@ get url = do
     resp <- sendAPIRequest url []
     return $ mapR (getRight . eitherDecode) resp
 
-sendAPIRequest :: LolRequest -> [(String, String)] -> IO (Either LolError ByteString)
-sendAPIRequest url opts = do
+sendAPIRequest' :: (Region -> String) -> LolRequest -> [(String, String)] -> IO (Either LolError ByteString)
+sendAPIRequest' base_urlf url opts = do
     let opts_str = intercalate "&" . map (\(x, y) -> x ++ "=" ++ y) $ ("api_key", api_key) : opts
-    let url_str = base_url EUW ++ url ++ "?" ++ opts_str
+    let url_str = base_urlf EUW ++ url ++ "?" ++ opts_str
     resp <- curlGetResponse_ url_str [] :: IO (CurlResponse_ [(String, String)] ByteString)
     case respCurlCode resp of
         CurlOK  ->  return $ Right $ respBody resp
@@ -59,8 +60,11 @@ sendAPIRequest url opts = do
                         503 -> error $ show ServiceUnavailable
                         e   -> error $ "Unknown error code: " ++ show e
 
-sendAPIRequest' :: LolRequest -> IO (Either LolError ByteString)
-sendAPIRequest' url_str = do
+sendAPIRequest :: LolRequest -> [(String, String)] -> IO (Either LolError ByteString)
+sendAPIRequest = sendAPIRequest' base_url
+
+sendAPIRequest_ :: LolRequest -> IO (Either LolError ByteString)
+sendAPIRequest_ url_str = do
     resp <- curlGetResponse_ url_str [] :: IO (CurlResponse_ [(String, String)] ByteString)
     case respCurlCode resp of
         CurlOK  ->  return $ Right $ respBody resp

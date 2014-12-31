@@ -11,8 +11,8 @@ import Data.Aeson
 
 getShards :: IO (Either LolError [Shard])
 getShards =
-    fmap (mapR (getRight . eitherDecode)) $ sendAPIRequest' "http://status.leagueoflegends.com/shards"
+    fmap (mapR (getRight . eitherDecode)) $ sendAPIRequest_ "http://status.leagueoflegends.com/shards"
 
 getShardByRegion :: Region -> IO (Either LolError ShardStatus)
 getShardByRegion region =
-    fmap (mapR (getRight . eitherDecode)) $ sendAPIRequest' $ "http://status.leagueoflegends.com/shards/" ++ show region
+    fmap (mapR (getRight . eitherDecode)) $ sendAPIRequest_ $ "http://status.leagueoflegends.com/shards/" ++ show region
