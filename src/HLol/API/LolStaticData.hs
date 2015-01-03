@@ -19,6 +19,7 @@ import HLol.Data.Champion
 import HLol.Network.Rest
 import HLol.Utils
 
+import Control.Monad (join)
 import Data.Aeson
 
 static_base :: Region -> String
@@ -27,12 +28,12 @@ static_base r = "https://global.api.pvp.net/api/lol/static-data/" ++ show r
 getStatic :: (FromJSON a) => String -> IO (Either LolError a)
 getStatic url = do
     resp <- sendAPIRequest' static_base url []
-    return $ mapR (getRight . eitherDecode) resp
+    return $ join $ mapR (liftError . eitherDecode) resp
 
 getStaticWithOpts :: (FromJSON a) => String -> [(String, String)] -> IO (Either LolError a)
 getStaticWithOpts url opts = do
     resp <- sendAPIRequest' static_base url opts
-    return $ mapR (getRight . eitherDecode) resp
+    return $ join $ mapR (liftError . eitherDecode) resp
 
 getChampions :: IO (Either LolError ChampionListDto)
 getChampions = getStaticWithOpts "/v1.2/champion" [("champData", "all")]

@@ -11,6 +11,7 @@ import HLol.Data.League (LeagueDto)
 import HLol.Network.Rest
 import HLol.Utils
 
+import Control.Monad (join)
 import Data.Aeson
 import Data.List (intercalate)
 import qualified Data.Map as M
@@ -41,4 +42,4 @@ getLeagueEntriesByTeam teamIds =
 getChallengerLeagues :: LeagueType -> IO (Either LolError LeagueDto)
 getChallengerLeagues league = do
     resp <- sendAPIRequest "/v2.5/league/challenger" [("type", show league)]
-    return $ mapR (getRight . eitherDecode) resp
+    return $ join $ mapR (liftError . eitherDecode) resp

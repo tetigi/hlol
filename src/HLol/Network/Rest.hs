@@ -8,29 +8,16 @@ module HLol.Network.Rest (
     Region(..)
     ) where
 
+import HLol.Data.Common
 import HLol.Logging.Logger
 import HLol.Utils
 
+import Control.Monad
 import Network.Curl
 
 import Data.Aeson
 import Data.List (intercalate)
 import Data.ByteString.Lazy (ByteString)
-
-data LolError =
-    BadRequest |
-    Unauthorized |
-    NotFound |
-    RateLimitExceeded |
-    InternalServerError |
-    ServiceUnavailable
-    deriving (Show, Eq)
-
-data Region = EUW | NA
-
-instance (Show Region) where
-    show EUW    = "euw"
-    show NA     = "na"
 
 tag :: String
 tag = "HLol.Network.Rest"
@@ -46,7 +33,7 @@ type LolRequest = String
 get :: (FromJSON a) => String -> IO (Either LolError a)
 get url = do
     resp <- sendAPIRequest url []
-    return $ mapR (getRight . eitherDecode) resp
+    return $ join $ mapR (liftError . eitherDecode) resp
 
 sendAPIRequest' :: (Region -> String) -> LolRequest -> [(String, String)] -> IO (Either LolError ByteString)
 sendAPIRequest' base_urlf url opts = do

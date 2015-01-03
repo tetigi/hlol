@@ -65,7 +65,7 @@ testChamp :: Int
 testChamp = 266
 
 testItem :: Int
-testItem = undefined
+testItem = 1001 -- Boots of Speed
 
 testMastery :: Int
 testMastery = undefined
@@ -192,7 +192,7 @@ allTests = [
     championTests,
     gameTests,
     leagueTests,
-    --lolStaticDataTests,
+    lolStaticDataTests,
     lolStatusTests,
     matchTests,
     matchHistoryTests,

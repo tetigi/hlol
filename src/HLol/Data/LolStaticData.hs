@@ -116,7 +116,7 @@ instance FromJSON StatsDto where
         v .: "spellblockperlevel"
     parseJSON _ = mzero
 data SkinDto = SkinDto {
-    _id :: Int,
+    _id :: Maybe Int,
     _skinName :: String,
     _num :: Int
 } deriving (Eq, Show)
@@ -309,144 +309,9 @@ instance FromJSON GoldDto where
         v .: "sell"<*>
         v .: "total"
     parseJSON _ = mzero
-data BasicDataStatsDto = BasicDataStatsDto {
-    _FlatArmorMod :: Double,
-    _FlatAttackSpeedMod :: Double,
-    _FlatBlockMod :: Double,
-    _FlatCritChanceMod :: Double,
-    _FlatCritDamageMod :: Double,
-    _FlatEXPBonus :: Double,
-    _FlatEnergyPoolMod :: Double,
-    _FlatEnergyRegenMod :: Double,
-    _FlatHPPoolMod :: Double,
-    _FlatHPRegenMod :: Double,
-    _FlatMPPoolMod :: Double,
-    _FlatMPRegenMod :: Double,
-    _FlatMagicDamageMod :: Double,
-    _FlatMovementSpeedMod :: Double,
-    _FlatPhysicalDamageMod :: Double,
-    _FlatSpellBlockMod :: Double,
-    _PercentArmorMod :: Double,
-    _PercentAttackSpeedMod :: Double,
-    _PercentBlockMod :: Double,
-    _PercentCritChanceMod :: Double,
-    _PercentCritDamageMod :: Double,
-    _PercentDodgeMod :: Double,
-    _PercentEXPBonus :: Double,
-    _PercentHPPoolMod :: Double,
-    _PercentHPRegenMod :: Double,
-    _PercentLifeStealMod :: Double,
-    _PercentMPPoolMod :: Double,
-    _PercentMPRegenMod :: Double,
-    _PercentMagicDamageMod :: Double,
-    _PercentMovementSpeedMod :: Double,
-    _PercentPhysicalDamageMod :: Double,
-    _PercentSpellBlockMod :: Double,
-    _PercentSpellVampMod :: Double,
-    _rFlatArmorModPerLevel :: Double,
-    _rFlatArmorPenetrationMod :: Double,
-    _rFlatArmorPenetrationModPerLevel :: Double,
-    _rFlatCritChanceModPerLevel :: Double,
-    _rFlatCritDamageModPerLevel :: Double,
-    _rFlatDodgeMod :: Double,
-    _rFlatDodgeModPerLevel :: Double,
-    _rFlatEnergyModPerLevel :: Double,
-    _rFlatEnergyRegenModPerLevel :: Double,
-    _rFlatGoldPer10Mod :: Double,
-    _rFlatHPModPerLevel :: Double,
-    _rFlatHPRegenModPerLevel :: Double,
-    _rFlatMPModPerLevel :: Double,
-    _rFlatMPRegenModPerLevel :: Double,
-    _rFlatMagicDamageModPerLevel :: Double,
-    _rFlatMagicPenetrationMod :: Double,
-    _rFlatMagicPenetrationModPerLevel :: Double,
-    _rFlatMovementSpeedModPerLevel :: Double,
-    _rFlatPhysicalDamageModPerLevel :: Double,
-    _rFlatSpellBlockModPerLevel :: Double,
-    _rFlatTimeDeadMod :: Double,
-    _rFlatTimeDeadModPerLevel :: Double,
-    _rPercentArmorPenetrationMod :: Double,
-    _rPercentArmorPenetrationModPerLevel :: Double,
-    _rPercentAttackSpeedModPerLevel :: Double,
-    _rPercentCooldownMod :: Double,
-    _rPercentCooldownModPerLevel :: Double,
-    _rPercentMagicPenetrationMod :: Double,
-    _rPercentMagicPenetrationModPerLevel :: Double,
-    _rPercentMovementSpeedModPerLevel :: Double,
-    _rPercentTimeDeadMod :: Double,
-    _rPercentTimeDeadModPerLevel :: Double
-} deriving (Eq, Show)
 
-makeLenses ''BasicDataStatsDto
+type BasicDataStatsDto = M.Map String Double
 
-instance FromJSON BasicDataStatsDto where
-    parseJSON (Object v) = BasicDataStatsDto <$>
-        v .: "FlatArmorMod"<*>
-        v .: "FlatAttackSpeedMod"<*>
-        v .: "FlatBlockMod"<*>
-        v .: "FlatCritChanceMod"<*>
-        v .: "FlatCritDamageMod"<*>
-        v .: "FlatEXPBonus"<*>
-        v .: "FlatEnergyPoolMod"<*>
-        v .: "FlatEnergyRegenMod"<*>
-        v .: "FlatHPPoolMod"<*>
-        v .: "FlatHPRegenMod"<*>
-        v .: "FlatMPPoolMod"<*>
-        v .: "FlatMPRegenMod"<*>
-        v .: "FlatMagicDamageMod"<*>
-        v .: "FlatMovementSpeedMod"<*>
-        v .: "FlatPhysicalDamageMod"<*>
-        v .: "FlatSpellBlockMod"<*>
-        v .: "PercentArmorMod"<*>
-        v .: "PercentAttackSpeedMod"<*>
-        v .: "PercentBlockMod"<*>
-        v .: "PercentCritChanceMod"<*>
-        v .: "PercentCritDamageMod"<*>
-        v .: "PercentDodgeMod"<*>
-        v .: "PercentEXPBonus"<*>
-        v .: "PercentHPPoolMod"<*>
-        v .: "PercentHPRegenMod"<*>
-        v .: "PercentLifeStealMod"<*>
-        v .: "PercentMPPoolMod"<*>
-        v .: "PercentMPRegenMod"<*>
-        v .: "PercentMagicDamageMod"<*>
-        v .: "PercentMovementSpeedMod"<*>
-        v .: "PercentPhysicalDamageMod"<*>
-        v .: "PercentSpellBlockMod"<*>
-        v .: "PercentSpellVampMod"<*>
-        v .: "rFlatArmorModPerLevel"<*>
-        v .: "rFlatArmorPenetrationMod"<*>
-        v .: "rFlatArmorPenetrationModPerLevel"<*>
-        v .: "rFlatCritChanceModPerLevel"<*>
-        v .: "rFlatCritDamageModPerLevel"<*>
-        v .: "rFlatDodgeMod"<*>
-        v .: "rFlatDodgeModPerLevel"<*>
-        v .: "rFlatEnergyModPerLevel"<*>
-        v .: "rFlatEnergyRegenModPerLevel"<*>
-        v .: "rFlatGoldPer10Mod"<*>
-        v .: "rFlatHPModPerLevel"<*>
-        v .: "rFlatHPRegenModPerLevel"<*>
-        v .: "rFlatMPModPerLevel"<*>
-        v .: "rFlatMPRegenModPerLevel"<*>
-        v .: "rFlatMagicDamageModPerLevel"<*>
-        v .: "rFlatMagicPenetrationMod"<*>
-        v .: "rFlatMagicPenetrationModPerLevel"<*>
-        v .: "rFlatMovementSpeedModPerLevel"<*>
-        v .: "rFlatPhysicalDamageModPerLevel"<*>
-        v .: "rFlatSpellBlockModPerLevel"<*>
-        v .: "rFlatTimeDeadMod"<*>
-        v .: "rFlatTimeDeadModPerLevel"<*>
-        v .: "rPercentArmorPenetrationMod"<*>
-        v .: "rPercentArmorPenetrationModPerLevel"<*>
-        v .: "rPercentAttackSpeedModPerLevel"<*>
-        v .: "rPercentCooldownMod"<*>
-        v .: "rPercentCooldownModPerLevel"<*>
-        v .: "rPercentMagicPenetrationMod"<*>
-        v .: "rPercentMagicPenetrationModPerLevel"<*>
-        v .: "rPercentMovementSpeedModPerLevel"<*>
-        v .: "rPercentTimeDeadMod"<*>
-        v .: "rPercentTimeDeadModPerLevel"
-    parseJSON _ = mzero
 data ItemTreeDto = ItemTreeDto {
     _header :: String,
     _tags :: [String]
@@ -459,65 +324,66 @@ instance FromJSON ItemTreeDto where
         v .: "header"<*>
         v .: "tags"
     parseJSON _ = mzero
+
 data ItemDto = ItemDto {
-    _colloq :: String,
-    _consumeOnFull :: Bool,
-    _consumed :: Bool,
-    _depth :: Int,
+    _colloq :: Maybe String,
+    _consumeOnFull :: Maybe Bool,
+    _consumed :: Maybe Bool,
+    _depth :: Maybe Int,
     _itemDescription :: String,
-    _itemEffect :: M.Map String String,
-    _from :: [String],
+    _itemEffect :: Maybe (M.Map String String),
+    _from :: Maybe [String],
     _gold :: GoldDto,
-    _itemGroup :: String,
-    _hideFromAll :: Bool,
+    _itemGroup :: Maybe String,
+    _hideFromAll :: Maybe Bool,
     _itemId :: Int,
     _itemImage :: ImageDto,
-    _inStore :: Bool,
-    _into :: [String],
-    _maps :: M.Map String Bool,
+    _inStore :: Maybe Bool,
+    _into :: Maybe [String],
+    _maps :: Maybe (M.Map String Bool),
     _itemName :: String,
-    _plaintext :: String,
-    _requiredChampion :: String,
-    _rune :: MetaDataDto,
+    _plaintext :: Maybe String,
+    _requiredChampion :: Maybe String,
+    _rune :: Maybe MetaDataDto,
     _itemSanitizedDescription :: String,
-    _specialRecipe :: Int,
-    _stacks :: Int,
+    _specialRecipe :: Maybe Int,
+    _stacks :: Maybe Int,
     _stats :: BasicDataStatsDto,
-    _itemTags :: [String]
+    _itemTags :: Maybe [String]
 } deriving (Eq, Show)
 
 makeLenses ''ItemDto
 
 instance FromJSON ItemDto where
     parseJSON (Object v) = ItemDto <$>
-        v .: "colloq"<*>
-        v .: "consumeOnFull"<*>
-        v .: "consumed"<*>
-        v .: "depth"<*>
+        v .:? "colloq"<*>
+        v .:? "consumeOnFull"<*>
+        v .:? "consumed"<*>
+        v .:? "depth"<*>
         v .: "description"<*>
-        v .: "effect"<*>
-        v .: "from"<*>
+        v .:? "effect"<*>
+        v .:? "from"<*>
         v .: "gold"<*>
-        v .: "group"<*>
-        v .: "hideFromAll"<*>
+        v .:? "group"<*>
+        v .:? "hideFromAll"<*>
         v .: "id"<*>
         v .: "image"<*>
-        v .: "inStore"<*>
-        v .: "into"<*>
-        v .: "maps"<*>
+        v .:? "inStore"<*>
+        v .:? "into"<*>
+        v .:? "maps"<*>
         v .: "name"<*>
-        v .: "plaintext"<*>
-        v .: "requiredChampion"<*>
-        v .: "rune"<*>
+        v .:? "plaintext"<*>
+        v .:? "requiredChampion"<*>
+        v .:? "rune"<*>
         v .: "sanitizedDescription"<*>
-        v .: "specialRecipe"<*>
-        v .: "stacks"<*>
+        v .:? "specialRecipe"<*>
+        v .:? "stacks"<*>
         v .: "stats"<*>
-        v .: "tags"
+        v .:? "tags"
     parseJSON _ = mzero
 
 data GroupDto = GroupDto {
-    _MaxGroupOwnable :: String,
+    _MaxGroupOwnable :: Maybe String,
     _groupKey :: String
 } deriving (Eq, Show)
 
@@ -525,64 +391,65 @@ makeLenses ''GroupDto
 
 instance FromJSON GroupDto where
     parseJSON (Object v) = GroupDto <$>
-        v .: "MaxGroupOwnable"<*>
+        v .:? "MaxGroupOwnable"<*>
         v .: "key"
     parseJSON _ = mzero
 
 data BasicDataDto = BasicDataDto {
-    _bdataColloq :: String,
+    _bdataColloq :: Maybe String,
     _bdataConsumeOnFull :: Bool,
     _bdataConsumed :: Bool,
     _bdataDepth :: Int,
-    _bdataDescription :: String,
-    _bdataFrom :: [String],
+    _bdataDescription :: Maybe String,
+    _bdataFrom :: Maybe [String],
     _bdataGold :: GoldDto,
-    _bdataGroup :: String,
+    _bdataGroup :: Maybe String,
     _bdataHideFromAll :: Bool,
     _bdataId :: Int,
-    _bdataImage :: ImageDto,
+    _bdataImage :: Maybe ImageDto,
     _bdataInStore :: Bool,
-    _bdataInto :: [String],
+    _bdataInto :: Maybe [String],
     _bdataMaps :: M.Map String Bool,
-    _bdataName :: String,
-    _bataPlaintext :: String,
-    _bdataRequiredChampion :: String,
+    _bdataName :: Maybe String,
+    _bataPlaintext :: Maybe String,
+    _bdataRequiredChampion :: Maybe String,
     _bdataRune :: MetaDataDto,
-    _bdataSanitizedDescription :: String,
+    _bdataSanitizedDescription :: Maybe String,
     _bdataSpecialRecipe :: Int,
     _bdataStacks :: Int,
     _bdataStats :: BasicDataStatsDto,
-    _bdataTags :: [String]
+    _bdataTags :: Maybe [String]
 } deriving (Eq, Show)
 
 makeLenses ''BasicDataDto
 
 instance FromJSON BasicDataDto where
     parseJSON (Object v) = BasicDataDto <$>
-        v .: "colloq"<*>
+        v .:? "colloq"<*>
         v .: "consumeOnFull"<*>
         v .: "consumed"<*>
         v .: "depth"<*>
-        v .: "description"<*>
-        v .: "from"<*>
+        v .:? "description"<*>
+        v .:? "from"<*>
         v .: "gold"<*>
-        v .: "group"<*>
+        v .:? "group"<*>
         v .: "hideFromAll"<*>
         v .: "id"<*>
-        v .: "image"<*>
+        v .:? "image"<*>
         v .: "inStore"<*>
-        v .: "into"<*>
+        v .:? "into"<*>
         v .: "maps"<*>
-        v .: "name"<*>
-        v .: "plaintext"<*>
-        v .: "requiredChampion"<*>
+        v .:? "name"<*>
+        v .:? "plaintext"<*>
+        v .:? "requiredChampion"<*>
         v .: "rune"<*>
-        v .: "sanitizedDescription"<*>
+        v .:? "sanitizedDescription"<*>
         v .: "specialRecipe"<*>
         v .: "stacks"<*>
         v .: "stats"<*>
-        v .: "tags"
+        v .:? "tags"
     parseJSON _ = mzero
+
 data ItemListDto = ItemListDto {
     _basic :: BasicDataDto,
     _itemListData :: M.Map String ItemDto,
