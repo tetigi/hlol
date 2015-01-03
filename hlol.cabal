@@ -66,6 +66,7 @@ Test-Suite test-hlol
                     ,random
                     ,MissingH
                     ,text
+                    ,hslogger
   default-language:    Haskell2010
 
 executable hlol

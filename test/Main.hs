@@ -15,6 +15,7 @@ import qualified HLol.Data.Summoner as Summ
 
 import HLol.Network.Rest (Region(..))
 
+import HLol.Logging.Logger
 import HLol.Utils
 
 import Control.Applicative
@@ -43,17 +44,21 @@ testGameGet =
     buildTest $ fmap (testCase "gameGet" . assertRight) $ Game.getGames tetigi
 
 -- league-v2.5 --------------------------
+
+testLeagueId :: Int
+testLeagueId = 19751358
+
 testLeagueGet =
-    buildTest $ fmap (testCase "leagueGet" . assertRight) $ League.getLeagues [tetigi]
+    buildTest $ fmap (testCase "leagueGet" . assertRight) $ League.getLeagues [testLeagueId]
 testLeagueEntriesGet =
-    buildTest $ fmap (testCase "leagueEntryGet" . assertRight) $ League.getLeagueEntries [tetigi]
+    buildTest $ fmap (testCase "leagueEntryGet" . assertRight) $ League.getLeagueEntries [testLeagueId]
 {- TODO Get a team id
 testLeaguesByTeamGet =
     buildTest $ fmap (testCase "leagueEntryGet" . assertRight) $ League.getLeagueEntries =<< sequence [tetigi]
 testLeagueEntriesByTeamGet =
     buildTest $ fmap (testCase "leagueEntryGet" . assertRight) $ League.getLeagueEntries =<< sequence [tetigi]
 -}
-testChallengerGet = buildTest $ fmap (testCase "leagueChallengerGet" . assertRight) $ League.getChallengerLeagues
+testChallengerGet = buildTest $ fmap (testCase "leagueChallengerGet" . assertRight) $ League.getChallengerLeagues League.RankedSolo5x5
 
 -- lol-static-data-v1.2 ----------------
 testChamp :: Int
@@ -96,7 +101,7 @@ testShardByRegionGet = buildTest $ fmap (testCase "shardByRegionGet" . assertRig
 
 -- match-v2.2 --------------------------
 testMatch :: Int
-testMatch = undefined
+testMatch = 1873964841
 
 testMatchGet = buildTest $ fmap (testCase "matchGet" . assertRight) $ Match.getMatch testMatch
 
@@ -116,8 +121,8 @@ testSummariesGet =
 testByNameGet = buildTest $ fmap (testCase "byNameGet" . assertRight) $ Summoner.getByNames ["tetigi"]
 
 -- team-v2.4 ---------------------------
-testTeam :: Int
-testTeam = undefined
+testTeam :: String
+testTeam = "TEAM-c27bcec0-8fe6-11e2-aa48-782bcb4ce61a"
 
 testTeamBySummonerIdGet =
     buildTest $ fmap (testCase "teamBySummGet" . assertRight) $ Team.getTeamsBySummonerIds [tetigi]
@@ -187,15 +192,15 @@ allTests = [
     championTests,
     gameTests,
     leagueTests,
-    lolStaticDataTests,
+    --lolStaticDataTests,
     lolStatusTests,
     matchTests,
     matchHistoryTests,
-    statsTests,
+    --statsTests,
     summonerTests,
     teamTests
     ]
 
 main :: IO ()
 main = do
-    defaultMainWithOpts allTests mempty
+    withLogging $ defaultMainWithOpts allTests mempty

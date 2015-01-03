@@ -31,16 +31,18 @@ getNiceTime = do
     time <- getCurrentTime
     return $ formatISO8601 time
 
-assembleLogMessage :: String -> IO String
-assembleLogMessage msg = do
+data LogLevel = Info | Error | Debug deriving Show
+
+assembleLogMessage :: LogLevel -> String -> IO String
+assembleLogMessage lvl msg = do
     timeStr <- getNiceTime
-    return $ printf "[%s] %s" timeStr msg
+    return $ printf "(%s) [%s] %s" (show lvl) timeStr msg
 
 lolInfo :: String -> String -> IO ()
-lolInfo logger msg = infoM logger =<< assembleLogMessage msg
+lolInfo logger msg = infoM logger =<< assembleLogMessage Info msg
 
 lolError :: String -> String -> IO ()
-lolError logger msg = errorM logger =<< assembleLogMessage msg
+lolError logger msg = errorM logger =<< assembleLogMessage Error msg
 
 lolDebug :: String -> String -> IO ()
-lolDebug logger msg = debugM logger =<< assembleLogMessage msg
+lolDebug logger msg = debugM logger =<< assembleLogMessage Debug msg
