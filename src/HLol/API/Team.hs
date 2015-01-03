@@ -13,6 +13,6 @@ getTeamsBySummonerIds :: [Int] -> IO (Either LolError (M.Map String [TeamDto]))
 getTeamsBySummonerIds summonerIds =
     get $ "/v2.4/team/by-summoner/" ++ (intercalate "," $ map show summonerIds)
 
-getTeamsByTeamIds :: [Int] -> IO (Either LolError (M.Map String [TeamDto]))
+getTeamsByTeamIds :: [String] -> IO (Either LolError (M.Map String [TeamDto]))
 getTeamsByTeamIds teamIds =
-    get $ "/v2.4/team/" ++ (intercalate "," $ map show teamIds)
+    get $ "/v2.4/team/" ++ (intercalate "," teamIds)
