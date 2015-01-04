@@ -7,7 +7,8 @@ import Control.Lens
 import Control.Monad
 import Data.Aeson
 import qualified Data.Map as M
-import Data.Maybe (isJust)
+import Data.Maybe (isJust, fromJust)
+import Data.Text (pack)
 
 data Position = Position {
     _x :: Int,
@@ -27,7 +28,7 @@ data ParticipantFrame = ParticipantFrame {
     _level :: Int,
     _participantMinionsKilled :: Int,
     _participantFrameId :: Int,
-    _participantFramePosition :: Position,
+    _participantFramePosition :: Maybe Position,
     _totalGold :: Int,
     _xp :: Int
 } deriving (Eq, Show)
@@ -41,64 +42,64 @@ instance FromJSON ParticipantFrame where
         v .: "level"<*>
         v .: "minionsKilled"<*>
         v .: "participantId"<*>
-        v .: "position"<*>
+        v .:? "position"<*>
         v .: "totalGold"<*>
         v .: "xp"
     parseJSON _ = mzero
 data Event = Event {
-    _ascendedType :: String,
-    _assistingParticipantIds :: [Int],
-    _buildingType :: String,
-    _creatorId :: Int,
-    _eventType :: String,
-    _itemAfter :: Int,
-    _itemBefore :: Int,
-    _itemId :: Int,
-    _killerId :: Int,
-    _laneType :: String,
-    _levelUpType :: String,
-    _monsterType :: String,
-    _eventParticipantId :: Int,
-    _pointCaptured :: String,
-    _position :: Position,
-    _skillSlot :: Int,
-    _eventTeamId :: Int,
-    _eventTimestamp :: Int,
-    _towerType :: String,
-    _victimId :: Int,
-    _wardType :: String
+    _ascendedType :: Maybe String,
+    _assistingParticipantIds :: Maybe [Int],
+    _buildingType :: Maybe String,
+    _creatorId :: Maybe Int,
+    _eventType :: Maybe String,
+    _itemAfter :: Maybe Int,
+    _itemBefore :: Maybe Int,
+    _itemId :: Maybe Int,
+    _killerId :: Maybe Int,
+    _laneType :: Maybe String,
+    _levelUpType :: Maybe String,
+    _monsterType :: Maybe String,
+    _eventParticipantId :: Maybe Int,
+    _pointCaptured :: Maybe String,
+    _position :: Maybe Position,
+    _skillSlot :: Maybe Int,
+    _eventTeamId :: Maybe Int,
+    _eventTimestamp :: Maybe Int,
+    _towerType :: Maybe String,
+    _victimId :: Maybe Int,
+    _wardType :: Maybe String
 } deriving (Eq, Show)
 
 makeLenses ''Event
 
 instance FromJSON Event where
     parseJSON (Object v) = Event <$>
-        v .: "ascendedType"<*>
-        v .: "assistingParticipantIds"<*>
-        v .: "buildingType"<*>
-        v .: "creatorId"<*>
-        v .: "eventType"<*>
-        v .: "itemAfter"<*>
-        v .: "itemBefore"<*>
-        v .: "itemId"<*>
-        v .: "killerId"<*>
-        v .: "laneType"<*>
-        v .: "levelUpType"<*>
-        v .: "monsterType"<*>
-        v .: "participantId"<*>
-        v .: "pointCaptured"<*>
-        v .: "position"<*>
-        v .: "skillSlot"<*>
-        v .: "teamId"<*>
-        v .: "timestamp"<*>
-        v .: "towerType"<*>
-        v .: "victimId"<*>
-        v .: "wardType"
+        v .:? "ascendedType"<*>
+        v .:? "assistingParticipantIds"<*>
+        v .:? "buildingType"<*>
+        v .:? "creatorId"<*>
+        v .:? "eventType"<*>
+        v .:? "itemAfter"<*>
+        v .:? "itemBefore"<*>
+        v .:? "itemId"<*>
+        v .:? "killerId"<*>
+        v .:? "laneType"<*>
+        v .:? "levelUpType"<*>
+        v .:? "monsterType"<*>
+        v .:? "participantId"<*>
+        v .:? "pointCaptured"<*>
+        v .:? "position"<*>
+        v .:? "skillSlot"<*>
+        v .:? "teamId"<*>
+        v .:? "timestamp"<*>
+        v .:? "towerType"<*>
+        v .:? "victimId"<*>
+        v .:? "wardType"
     parseJSON _ = mzero
 data ParticipantTimelineData = ParticipantTimelineData {
     _tenToTwenty :: Double,
-    _thirtyToEnd :: Double,
-    _twentyToThirty :: Double,
+    _thirtyToEnd :: Maybe Double,
+    _twentyToThirty :: Maybe Double,
     _zeroToTen :: Double
 } deriving (Eq, Show)
 
@@ -107,12 +108,12 @@ makeLenses ''ParticipantTimelineData
 instance FromJSON ParticipantTimelineData where
     parseJSON (Object v) = ParticipantTimelineData <$>
         v .: "tenToTwenty"<*>
-        v .: "thirtyToEnd"<*>
-        v .: "twentyToThirty"<*>
+        v .:? "thirtyToEnd"<*>
+        v .:? "twentyToThirty"<*>
         v .: "zeroToTen"
     parseJSON _ = mzero
 data Frame = Frame {
-    _events :: [Event],
+    _events :: Maybe [Event],
     _participantFrames :: M.Map String ParticipantFrame,
     _timestamp :: Int
 } deriving (Eq, Show)
@@ -121,7 +122,7 @@ makeLenses ''Frame
 
 instance FromJSON Frame where
     parseJSON (Object v) = Frame <$>
-        v .: "events"<*>
+        v .:? "events"<*>
         v .: "participantFrames"<*>
         v .: "timestamp"
     parseJSON _ = mzero
@@ -167,9 +168,9 @@ instance FromJSON Rune where
     parseJSON _ = mzero
 
 data ParticipantTimeline = ParticipantTimeline {
-    _timelineData :: M.Map String ParticipantTimelineData,
     _lane :: String,
-    _role :: String
+    _role :: String,
+    _timelineData :: M.Map String ParticipantTimelineData
 } deriving (Eq, Show)
 
 makeLenses ''ParticipantTimeline
@@ -178,9 +179,12 @@ instance FromJSON ParticipantTimeline where
     parseJSON (Object v) = do
         l <- v .: "lane"
         r <- v .: "role"
-        d <- mapM (v .:?) ks :: [Maybe ParticipantTimelineData]
-        return $ ParticipantTimeline l r $ M.fromList $ filter (isJust . snd) $ zip ks d
-        where ks = [ "ancientGolemAssistsPerMinCounts", "ancientGolemKillsPerMinCounts", "assistedLaneDeathsPerMinDeltas", "assistedLaneKillsPerMinDeltas", "baronAssistsPerMinCounts", "baronKillsPerMinCounts", "creepsPerMinDeltas", "csDiffPerMinDeltas", "damageTakenDiffPerMinDeltas", "damageTakenPerMinDeltas", "dragonAssistsPerMinCounts", "dragonKillsPerMinCounts", "elderLizardAssistsPerMinCounts", "elderLizardKillsPerMinCounts", "goldPerMinDeltas", "inhibitorAssistsPerMinCounts", "inhibitorKillsPerMinCounts", "towerAssistsPerMinCounts", "towerKillsPerMinCounts", "towerKillsPerMinDeltas", "vilemawAssistsPerMinCounts", "vilemawKillsPerMinCounts", "wardsPerMinDeltas", "xpDiffPerMinDeltas", "xpPerMinDeltas" ]
+        d <- mapM ((v .:?) . pack) ks
+        return $
+            ParticipantTimeline l r $
+                M.fromList $ map (\(k, w) -> (k, fromJust w)) $ filter (isJust . snd) $ zip ks d
+        where
+            ks = [ "ancientGolemAssistsPerMinCounts", "ancientGolemKillsPerMinCounts", "assistedLaneDeathsPerMinDeltas", "assistedLaneKillsPerMinDeltas", "baronAssistsPerMinCounts", "baronKillsPerMinCounts", "creepsPerMinDeltas", "csDiffPerMinDeltas", "damageTakenDiffPerMinDeltas", "damageTakenPerMinDeltas", "dragonAssistsPerMinCounts", "dragonKillsPerMinCounts", "elderLizardAssistsPerMinCounts", "elderLizardKillsPerMinCounts", "goldPerMinDeltas", "inhibitorAssistsPerMinCounts", "inhibitorKillsPerMinCounts", "towerAssistsPerMinCounts", "towerKillsPerMinCounts", "towerKillsPerMinDeltas", "vilemawAssistsPerMinCounts", "vilemawKillsPerMinCounts", "wardsPerMinDeltas", "xpDiffPerMinDeltas", "xpPerMinDeltas" ]
     parseJSON _ = mzero
 data ParticipantStats = ParticipantStats {
     _assists :: Int,
@@ -344,7 +348,7 @@ instance FromJSON Timeline where
 data Team = Team {
     _bans :: [BannedChampion],
     _baronKills :: Int,
-    _dominionVictoryScore :: Int,
+    _dominionVictoryScore :: Maybe Int,
     _dragonKills :: Int,
     _firstBaron :: Bool,
     _firstBlood :: Bool,
@@ -364,7 +368,7 @@ instance FromJSON Team where
     parseJSON (Object v) = Team <$>
         v .: "bans"<*>
         v .: "baronKills"<*>
-        v .: "dominionVictoryScore"<*>
+        v .:? "dominionVictoryScore"<*>
         v .: "dragonKills"<*>
         v .: "firstBaron"<*>
         v .: "firstBlood"<*>
@@ -394,7 +398,7 @@ data Participant = Participant {
     _highestAchievedSeasonTier :: String,
     _masteries :: [Mastery],
     _participantId :: Int,
-    _runes :: [Rune],
+    _runes :: Maybe [Rune],
     _spell1Id :: Int,
     _spell2Id :: Int,
     _stats :: ParticipantStats,
@@ -410,7 +414,7 @@ instance FromJSON Participant where
         v .: "highestAchievedSeasonTier"<*>
         v .: "masteries"<*>
         v .: "participantId"<*>
-        v .: "runes"<*>
+        v .:? "runes"<*>
         v .: "spell1Id"<*>
         v .: "spell2Id"<*>
         v .: "stats"<*>

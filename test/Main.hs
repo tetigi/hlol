@@ -104,6 +104,7 @@ testShardsGet = buildTest $ fmap (testCase "shardsGet" . assertRight) $ LolStatu
 testShardByRegionGet = buildTest $ fmap (testCase "shardByRegionGet" . assertRight) $ LolStatus.getShardByRegion testRegion
 
 -- match-v2.2 --------------------------
+-- TODO Need to test multiple matches...
 testMatch :: Int
 testMatch = 1873964841
 
