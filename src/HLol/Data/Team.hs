@@ -23,6 +23,7 @@ instance FromJSON TeamMemberInfoDto where
         v .: "playerId"<*>
         v .: "status"
     parseJSON _ = mzero
+
 data TeamStatDetailDto = TeamStatDetailDto {
     _averageGamesPlayed :: Int,
     _losses :: Int,
@@ -81,6 +82,7 @@ instance FromJSON MatchHistorySummaryDto where
         v .: "opposingTeamName"<*>
         v .: "win"
     parseJSON _ = mzero
+
 data TeamDto = TeamDto {
     _teamCreateDate :: Int,
     _teamFullId :: String,
