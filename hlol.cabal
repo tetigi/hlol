@@ -67,6 +67,7 @@ Test-Suite test-hlol
                     ,MissingH
                     ,text
                     ,hslogger
+                    ,vector
   default-language:    Haskell2010
 
 executable hlol
@@ -96,6 +97,7 @@ executable hlol
                     ,MissingH
                     ,text
                     ,hslogger
+                    ,vector
 
   -- Compiler options
   ghc-options: -Wall -O2

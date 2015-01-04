@@ -29,8 +29,9 @@ import Test.Framework.Providers.HUnit
 import Data.Monoid
 import qualified Data.Map as M
 
-assertRight :: Either a b -> HU.Assertion
-assertRight e = unless (isRight e) (HU.assertFailure "Expected Right but got Left")
+assertRight :: (Show a) => Either a b -> HU.Assertion
+assertRight (Left e) = HU.assertFailure $ "Expected Right but got Left: " ++ show e
+assertRight _ = return ()
 
 -- setup
 tetigi :: Int
@@ -68,15 +69,18 @@ testItem :: Int
 testItem = 1001 -- Boots of Speed
 
 testMastery :: Int
-testMastery = undefined
+testMastery = 4121
 
 testRune :: Int
-testRune = undefined
+testRune = 8012
 
 testSummonerSpell :: Int
-testSummonerSpell = undefined
+testSummonerSpell = 21
 
-testChampionGet = buildTest $ fmap (testCase "championGet" . assertRight) $ LolStaticData.getChampion testChamp
+testChampionGetStatic =
+    buildTest $ fmap (testCase "championGet" . assertRight) $ LolStaticData.getChampion testChamp
+testChampionsGetStatic =
+    buildTest $ fmap (testCase "championsGet" . assertRight) $ LolStaticData.getChampions
 testItemsGet = buildTest $ fmap (testCase "itemsGet" . assertRight) $ LolStaticData.getItems
 testItemGet = buildTest $ fmap (testCase "itemGet" . assertRight) $ LolStaticData.getItem testItem
 testLanguageGet = buildTest $ fmap (testCase "languageGet" . assertRight) $ LolStaticData.getLanguageData
@@ -147,7 +151,8 @@ leagueTests = testGroup "league"
     ]
 lolStaticDataTests = testGroup "lol-static-data"
     [
-        testChampionGet,
+        testChampionsGetStatic,
+        testChampionGetStatic,
         testItemsGet,
         testItemGet,
         testMasteriesGet,
@@ -190,7 +195,7 @@ teamTests = testGroup "team"
 
 allTests = [
     championTests,
-    gameTests,
+    --gameTests,
     leagueTests,
     lolStaticDataTests,
     lolStatusTests,

@@ -15,7 +15,6 @@ module HLol.API.LolStaticData (
     ) where
 
 import HLol.Data.LolStaticData
-import HLol.Data.Champion
 import HLol.Network.Rest
 import HLol.Utils
 
@@ -39,37 +38,37 @@ getChampions :: IO (Either LolError ChampionListDto)
 getChampions = getStaticWithOpts "/v1.2/champion" [("champData", "all")]
 
 getChampion :: Int -> IO (Either LolError ChampionDto)
-getChampion champId = getStatic $ "/v1.2/champion/" ++ show champId
+getChampion champId = getStaticWithOpts ("/v1.2/champion/" ++ show champId) [("champData", "all")]
 
 getItems :: IO (Either LolError ItemListDto)
 getItems = getStaticWithOpts "/v1.2/item" [("itemListData", "all")]
 
 getItem :: Int -> IO (Either LolError ItemDto)
-getItem item = getStatic $ "/v1.2/item/" ++ show item
+getItem item = getStaticWithOpts ("/v1.2/item/" ++ show item) [("itemData", "all")]
 
 getLanguageData :: IO (Either LolError [String])
 getLanguageData = getStatic "/v1.2/languages"
 
 getMasteries :: IO (Either LolError MasteryListDto)
-getMasteries = getStatic "/v1.2/mastery"
+getMasteries = getStaticWithOpts "/v1.2/mastery" [("masteryListData", "all")]
 
 getMastery :: Int -> IO (Either LolError MasteryDto)
-getMastery master = getStatic $ "/v1.2/mastery/" ++ show master
+getMastery master = getStaticWithOpts ("/v1.2/mastery/" ++ show master) [("masteryData", "all")]
 
 getRealmData :: IO (Either LolError RealmDto)
 getRealmData = getStatic "/v1.2/realm"
 
 getRunes :: IO (Either LolError RuneListDto)
-getRunes = getStatic "/v1.2/rune"
+getRunes = getStaticWithOpts "/v1.2/rune" [("runeListData", "all")]
 
 getRune :: Int -> IO (Either LolError RuneDto)
-getRune runeID = getStatic $ "/v1.2/rune/" ++ show runeID
+getRune runeID = getStaticWithOpts ("/v1.2/rune/" ++ show runeID) [("runeData", "all")]
 
 getSummonerSpells :: IO (Either LolError SummonerSpellListDto)
-getSummonerSpells = getStatic "/v1.2/summoner-spell"
+getSummonerSpells = getStaticWithOpts "/v1.2/summoner-spell" [("spellData", "all")]
 
 getSummonerSpell :: Int -> IO (Either LolError SummonerSpellDto)
-getSummonerSpell spellId = getStatic $ "/v1.2/summoner-spell/" ++ show spellId
+getSummonerSpell spellId = getStaticWithOpts ("/v1.2/summoner-spell/" ++ show spellId) [("spellData", "all")]
 
 getVersionData :: IO (Either LolError [String])
 getVersionData = getStatic "/v1.2/versions"

@@ -7,6 +7,7 @@ import Control.Lens
 import Control.Monad
 import Data.Aeson
 import qualified Data.Map as M
+import Data.Maybe (isJust)
 
 data Position = Position {
     _x :: Int,
@@ -164,67 +165,22 @@ instance FromJSON Rune where
         v .: "rank"<*>
         v .: "runeId"
     parseJSON _ = mzero
+
 data ParticipantTimeline = ParticipantTimeline {
-    _ancientGolemAssistsPerMinCounts :: ParticipantTimelineData,
-    _ancientGolemKillsPerMinCounts :: ParticipantTimelineData,
-    _assistedLaneDeathsPerMinDeltas :: ParticipantTimelineData,
-    _assistedLaneKillsPerMinDeltas :: ParticipantTimelineData,
-    _baronAssistsPerMinCounts :: ParticipantTimelineData,
-    _baronKillsPerMinCounts :: ParticipantTimelineData,
-    _creepsPerMinDeltas :: ParticipantTimelineData,
-    _csDiffPerMinDeltas :: ParticipantTimelineData,
-    _damageTakenDiffPerMinDeltas :: ParticipantTimelineData,
-    _damageTakenPerMinDeltas :: ParticipantTimelineData,
-    _dragonAssistsPerMinCounts :: ParticipantTimelineData,
-    _dragonKillsPerMinCounts :: ParticipantTimelineData,
-    _elderLizardAssistsPerMinCounts :: ParticipantTimelineData,
-    _elderLizardKillsPerMinCounts :: ParticipantTimelineData,
-    _goldPerMinDeltas :: ParticipantTimelineData,
-    _inhibitorAssistsPerMinCounts :: ParticipantTimelineData,
-    _inhibitorKillsPerMinCounts :: ParticipantTimelineData,
+    _timelineData :: M.Map String ParticipantTimelineData,
     _lane :: String,
-    _role :: String,
-    _towerAssistsPerMinCounts :: ParticipantTimelineData,
-    _towerKillsPerMinCounts :: ParticipantTimelineData,
-    _towerKillsPerMinDeltas :: ParticipantTimelineData,
-    _vilemawAssistsPerMinCounts :: ParticipantTimelineData,
-    _vilemawKillsPerMinCounts :: ParticipantTimelineData,
-    _wardsPerMinDeltas :: ParticipantTimelineData,
-    _xpDiffPerMinDeltas :: ParticipantTimelineData,
-    _xpPerMinDeltas :: ParticipantTimelineData
+    _role :: String
 } deriving (Eq, Show)
 
 makeLenses ''ParticipantTimeline
 
 instance FromJSON ParticipantTimeline where
-    parseJSON (Object v) = ParticipantTimeline <$>
-        v .: "ancientGolemAssistsPerMinCounts"<*>
-        v .: "ancientGolemKillsPerMinCounts"<*>
-        v .: "assistedLaneDeathsPerMinDeltas"<*>
-        v .: "assistedLaneKillsPerMinDeltas"<*>
-        v .: "baronAssistsPerMinCounts"<*>
-        v .: "baronKillsPerMinCounts"<*>
-        v .: "creepsPerMinDeltas"<*>
-        v .: "csDiffPerMinDeltas"<*>
-        v .: "damageTakenDiffPerMinDeltas"<*>
-        v .: "damageTakenPerMinDeltas"<*>
-        v .: "dragonAssistsPerMinCounts"<*>
-        v .: "dragonKillsPerMinCounts"<*>
-        v .: "elderLizardAssistsPerMinCounts"<*>
-        v .: "elderLizardKillsPerMinCounts"<*>
-        v .: "goldPerMinDeltas"<*>
-        v .: "inhibitorAssistsPerMinCounts"<*>
-        v .: "inhibitorKillsPerMinCounts"<*>
-        v .: "lane"<*>
-        v .: "role"<*>
-        v .: "towerAssistsPerMinCounts"<*>
-        v .: "towerKillsPerMinCounts"<*>
-        v .: "towerKillsPerMinDeltas"<*>
-        v .: "vilemawAssistsPerMinCounts"<*>
-        v .: "vilemawKillsPerMinCounts"<*>
-        v .: "wardsPerMinDeltas"<*>
-        v .: "xpDiffPerMinDeltas"<*>
-        v .: "xpPerMinDeltas"
+    parseJSON (Object v) = do
+        l <- v .: "lane"
+        r <- v .: "role"
+        d <- mapM (v .:?) ks :: [Maybe ParticipantTimelineData]
+        return $ ParticipantTimeline l r $ M.fromList $ filter (isJust . snd) $ zip ks d
+        where ks = [ "ancientGolemAssistsPerMinCounts", "ancientGolemKillsPerMinCounts", "assistedLaneDeathsPerMinDeltas", "assistedLaneKillsPerMinDeltas", "baronAssistsPerMinCounts", "baronKillsPerMinCounts", "creepsPerMinDeltas", "csDiffPerMinDeltas", "damageTakenDiffPerMinDeltas", "damageTakenPerMinDeltas", "dragonAssistsPerMinCounts", "dragonKillsPerMinCounts", "elderLizardAssistsPerMinCounts", "elderLizardKillsPerMinCounts", "goldPerMinDeltas", "inhibitorAssistsPerMinCounts", "inhibitorKillsPerMinCounts", "towerAssistsPerMinCounts", "towerKillsPerMinCounts", "towerKillsPerMinDeltas", "vilemawAssistsPerMinCounts", "vilemawKillsPerMinCounts", "wardsPerMinDeltas", "xpDiffPerMinDeltas", "xpPerMinDeltas" ]
     parseJSON _ = mzero
 data ParticipantStats = ParticipantStats {
     _assists :: Int,
@@ -260,10 +216,10 @@ data ParticipantStats = ParticipantStats {
     _neutralMinionsKilled :: Int,
     _neutralMinionsKilledEnemyJungle :: Int,
     _neutralMinionsKilledTeamJungle :: Int,
-    _nodeCapture :: Int,
-    _nodeCaptureAssist :: Int,
-    _nodeNeutralize :: Int,
-    _nodeNeutralizeAssist :: Int,
+    _nodeCapture :: Maybe Int,
+    _nodeCaptureAssist :: Maybe Int,
+    _nodeNeutralize :: Maybe Int,
+    _nodeNeutralizeAssist :: Maybe Int,
     _objectivePlayerScore :: Int,
     _pentaKills :: Int,
     _physicalDamageDealt :: Int,
@@ -271,7 +227,7 @@ data ParticipantStats = ParticipantStats {
     _physicalDamageTaken :: Int,
     _quadraKills :: Int,
     _sightWardsBoughtInGame :: Int,
-    _teamObjective :: Int,
+    _teamObjective :: Maybe Int,
     _totalDamageDealt :: Int,
     _totalDamageDealtToChampions :: Int,
     _totalDamageTaken :: Int,
@@ -329,10 +285,10 @@ instance FromJSON ParticipantStats where
         v .: "neutralMinionsKilled"<*>
         v .: "neutralMinionsKilledEnemyJungle"<*>
         v .: "neutralMinionsKilledTeamJungle"<*>
-        v .: "nodeCapture"<*>
-        v .: "nodeCaptureAssist"<*>
-        v .: "nodeNeutralize"<*>
-        v .: "nodeNeutralizeAssist"<*>
+        v .:? "nodeCapture"<*>
+        v .:? "nodeCaptureAssist"<*>
+        v .:? "nodeNeutralize"<*>
+        v .:? "nodeNeutralizeAssist"<*>
         v .: "objectivePlayerScore"<*>
         v .: "pentaKills"<*>
         v .: "physicalDamageDealt"<*>
@@ -340,7 +296,7 @@ instance FromJSON ParticipantStats where
         v .: "physicalDamageTaken"<*>
         v .: "quadraKills"<*>
         v .: "sightWardsBoughtInGame"<*>
-        v .: "teamObjective"<*>
+        v .:? "teamObjective"<*>
         v .: "totalDamageDealt"<*>
         v .: "totalDamageDealtToChampions"<*>
         v .: "totalDamageTaken"<*>

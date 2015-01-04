@@ -11,7 +11,7 @@ data Shard = Shard {
     _shardHostname :: String,
     _shardLocales :: [String],
     _shardName :: String,
-    _shardRegion_tag :: String,
+    _shardRegion_tag :: Maybe String,
     _shardSlug :: String
 } deriving (Eq, Show)
 
@@ -22,7 +22,7 @@ instance FromJSON Shard where
         v .: "hostname"<*>
         v .: "locales"<*>
         v .: "name"<*>
-        v .: "region_tag"<*>
+        v .:? "region_tag"<*>
         v .: "slug"
     parseJSON _ = mzero
 

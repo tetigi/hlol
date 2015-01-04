@@ -1,5 +1,6 @@
 module HLol.Network.Rest (
     get,
+    getWithOpts,
     sendAPIRequest,
     sendAPIRequest',
     sendAPIRequest_,
@@ -33,6 +34,11 @@ type LolRequest = String
 get :: (FromJSON a) => String -> IO (Either LolError a)
 get url = do
     resp <- sendAPIRequest url []
+    return $ join $ mapR (liftError . eitherDecode) resp
+
+getWithOpts :: (FromJSON a) => String -> [(String, String)] -> IO (Either LolError a)
+getWithOpts url opts = do
+    resp <- sendAPIRequest url opts
     return $ join $ mapR (liftError . eitherDecode) resp
 
 sendAPIRequest' :: (Region -> String) -> LolRequest -> [(String, String)] -> IO (Either LolError ByteString)

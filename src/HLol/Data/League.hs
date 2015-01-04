@@ -31,7 +31,7 @@ data LeagueEntryDto = LeagueEntryDto {
     _isInactive :: Bool,
     _isVeteran :: Bool,
     _leaguePoints :: Int,
-    _miniSeries :: MiniSeriesDto,
+    _miniSeries :: Maybe MiniSeriesDto,
     _playerOrTeamId :: String,
     _playerOrTeamName :: String,
     _leagueWins :: Int
@@ -47,7 +47,7 @@ instance FromJSON LeagueEntryDto where
         v .: "isInactive"<*>
         v .: "isVeteran"<*>
         v .: "leaguePoints"<*>
-        v .: "miniSeries"<*>
+        v .:? "miniSeries"<*>
         v .: "playerOrTeamId"<*>
         v .: "playerOrTeamName"<*>
         v .: "wins"
@@ -56,7 +56,7 @@ instance FromJSON LeagueEntryDto where
 data LeagueDto = LeagueDto {
     _entries :: [LeagueEntryDto],
     _name :: String,
-    _participantId :: String,
+    _participantId :: Maybe String,
     _queue :: String,
     _tier :: String
 } deriving (Eq, Show)
@@ -67,7 +67,7 @@ instance FromJSON LeagueDto where
     parseJSON (Object v) = LeagueDto <$>
         v .: "entries"<*>
         v .: "name"<*>
-        v .: "participantId"<*>
+        v .:? "participantId"<*>
         v .: "queue"<*>
         v .: "tier"
     parseJSON _ = mzero

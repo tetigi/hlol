@@ -7,8 +7,7 @@ import Control.Lens
 import Control.Monad
 import Data.Aeson
 import qualified Data.Map as M
-
-import HLol.Data.Champion (ChampionDto)
+import qualified Data.Vector as V
 
 data BlockItemDto = BlockItemDto {
     _count :: Int,
@@ -22,26 +21,28 @@ instance FromJSON BlockItemDto where
         v .: "count"<*>
         v .: "id"
     parseJSON _ = mzero
+
 data BlockDto = BlockDto {
-    _items :: [BlockItemDto],
-    _recMath :: Bool,
-    _blockType :: String
+    _items :: Maybe [BlockItemDto],
+    _recMath :: Maybe Bool,
+    _blockType :: Maybe String
 } deriving (Eq, Show)
 
 makeLenses ''BlockDto
 
 instance FromJSON BlockDto where
     parseJSON (Object v) = BlockDto <$>
-        v .: "items"<*>
-        v .: "recMath"<*>
-        v .: "type"
+        v .:? "items"<*>
+        v .:? "recMath"<*>
+        v .:? "type"
     parseJSON _ = mzero
+
 data SpellVarsDto = SpellVarsDto {
     _coeff :: [Double],
-    _dyn :: String,
+    _dyn :: Maybe String,
     _spellKey :: String,
     _link :: String,
-    _ranksWith :: String
+    _ranksWith :: Maybe String
 } deriving (Eq, Show)
 
 makeLenses ''SpellVarsDto
@@ -49,10 +50,10 @@ makeLenses ''SpellVarsDto
 instance FromJSON SpellVarsDto where
     parseJSON (Object v) = SpellVarsDto <$>
         v .: "coeff"<*>
-        v .: "dyn"<*>
+        v .:? "dyn"<*>
         v .: "key"<*>
         v .: "link"<*>
-        v .: "ranksWith"
+        v .:? "ranksWith"
     parseJSON _ = mzero
 
 data LevelTipDto = LevelTipDto {
@@ -209,35 +210,44 @@ instance FromJSON PassiveDto where
         v .: "sanitizedDescription"
     parseJSON _ = mzero
 
+data SpellRange = Self | Range [Int] deriving (Show, Eq)
+
+instance FromJSON SpellRange where
+    parseJSON (String "self") = return Self
+    parseJSON (Array vs) = do
+        parsedVs <- mapM parseJSON $ V.toList vs
+        return $ Range parsedVs
+    parseJSON _ = mzero
+
 data ChampionSpellDto = ChampionSpellDto {
-    _altimages :: [ImageDto],
+    _altimages :: Maybe [ImageDto],
     _cooldown :: [Double],
     _cooldownBurn :: String,
     _cost :: [Int],
     _costBurn :: String,
     _costType :: String,
     _description :: String,
-    _effect :: [[Double]],
+    _effect :: [Maybe [Double]],
     _effectBurn :: [String],
     _image :: ImageDto,
     _key :: String,
     _leveltip :: LevelTipDto,
     _maxrank :: Int,
     _name :: String,
-    _range :: Either [Int] String,
+    _range :: SpellRange,
     _rangeBurn :: String,
-    _resource :: String,
+    _resource :: Maybe String,
     _sanitizedDescription :: String,
     _sanitizedTooltip :: String,
     _tooltip :: String,
-    _vars :: [SpellVarsDto]
+    _vars :: Maybe [SpellVarsDto]
 } deriving (Eq, Show)
 
 makeLenses ''ChampionSpellDto
 
 instance FromJSON ChampionSpellDto where
     parseJSON (Object v) = ChampionSpellDto <$>
-        v .: "altimages"<*>
+        v .:? "altimages"<*>
         v .: "cooldown"<*>
         v .: "cooldownBurn"<*>
         v .: "cost"<*>
@@ -253,12 +263,56 @@ instance FromJSON ChampionSpellDto where
         v .: "name"<*>
         v .: "range"<*>
         v .: "rangeBurn"<*>
-        v .: "resource"<*>
+        v .:? "resource"<*>
         v .: "sanitizedDescription"<*>
         v .: "sanitizedTooltip"<*>
         v .: "tooltip"<*>
-        v .: "vars"
+        v .:? "vars"
     parseJSON _ = mzero
+
+data ChampionDto = ChampionDto {
+    _championAllytips :: [String],
+    _championBlurb :: String,
+    _championEnemytips :: [String],
+    _championId :: Int,
+    _championImage :: ImageDto,
+    _championInfo :: InfoDto,
+    _championKey :: String,
+    _championLore :: String,
+    _championName :: String,
+    _championPartype :: String,
+    _championPassive :: PassiveDto,
+    _championRecommended :: [RecommendedDto],
+    _championSkins :: [SkinDto],
+    _championSpells :: [ChampionSpellDto],
+    _championStats :: StatsDto,
+    _championTags :: [String],
+    _championTitle :: String
+} deriving (Eq, Show)
+
+makeLenses ''ChampionDto
+
+instance FromJSON ChampionDto where
+    parseJSON (Object v) = ChampionDto <$>
+        v .: "allytips"<*>
+        v .: "blurb"<*>
+        v .: "enemytips"<*>
+        v .: "id"<*>
+        v .: "image"<*>
+        v .: "info"<*>
+        v .: "key"<*>
+        v .: "lore"<*>
+        v .: "name"<*>
+        v .: "partype"<*>
+        v .: "passive"<*>
+        v .: "recommended"<*>
+        v .: "skins"<*>
+        v .: "spells"<*>
+        v .: "stats"<*>
+        v .: "tags"<*>
+        v .: "title"
+    parseJSON _ = mzero
+
 data ChampionListDto = ChampionListDto {
     _data :: M.Map String ChampionDto,
     _format :: String,
@@ -483,11 +537,16 @@ instance FromJSON MasteryTreeItemDto where
         v .: "masteryId"<*>
         v .: "prereq"
     parseJSON _ = mzero
+
 data MasteryTreeListDto = MasteryTreeListDto {
-    _masteryTreeItems :: [MasteryTreeItemDto]
+    _masteryTreeItems :: [Maybe MasteryTreeItemDto]
 } deriving (Eq, Show)
 
 makeLenses ''MasteryTreeListDto
+
+instance FromJSON MasteryTreeListDto where
+    parseJSON (Object v) = MasteryTreeListDto <$> v .: "masteryTreeItems"
+    parseJSON _ = mzero
 
 data MasteryTreeDto = MasteryTreeDto {
     _masteryTreeDefense :: [MasteryTreeListDto],
@@ -504,14 +563,9 @@ instance FromJSON MasteryTreeDto where
         v .: "Utility"
     parseJSON _ = mzero
 
-instance FromJSON MasteryTreeListDto where
-    parseJSON (Object v) = MasteryTreeListDto <$>
-        v .: "masteryTreeItems"
-    parseJSON _ = mzero
-
 data MasteryDto = MasteryDto {
     _masteryId :: Int,
-    _masteryRank :: Int
+    _masteryRank :: Maybe Int
 } deriving (Eq, Show)
 
 makeLenses ''MasteryDto
@@ -519,7 +573,7 @@ makeLenses ''MasteryDto
 instance FromJSON MasteryDto where
     parseJSON (Object v) = MasteryDto <$>
         v .: "id"<*>
-        v .: "rank"
+        v .:? "rank"
     parseJSON _ = mzero
 
 data MasteryListDto = MasteryListDto {
@@ -547,7 +601,7 @@ data RealmDto = RealmDto {
     _lg :: String,
     _n :: M.Map String String,
     _profileiconmax :: Int,
-    _store :: String,
+    _store :: Maybe String,
     _v :: String
 } deriving (Eq, Show)
 
@@ -562,63 +616,25 @@ instance FromJSON RealmDto where
         o .: "lg"<*>
         o .: "n"<*>
         o .: "profileiconmax"<*>
-        o .: "store"<*>
+        o .:? "store"<*>
         o .: "v"
     parseJSON _ = mzero
 
 data RuneDto = RuneDto {
-    _runeColloq :: String,
-    _runeConsumeOnFull :: Bool,
-    _runeConsumed :: Bool,
-    _runeDepth :: Int,
     _runeDescription :: String,
-    _runeFrom :: [String],
-    _runeGold :: GoldDto,
-    _runeGroup :: String,
-    _runeHideFromAll :: Bool,
     _runeId :: Int,
-    _runeImage :: ImageDto,
-    _runeInStore :: Bool,
-    _runeInto :: [String],
-    _runeMaps :: M.Map String Bool,
     _runeName :: String,
-    _runePlaintext :: String,
-    _runeRequiredChampion :: String,
-    _runeRune :: MetaDataDto,
-    _runeSanitizedDescription :: String,
-    _runeSpecialRecipe :: Int,
-    _runeStacks :: Int,
-    _runeStats :: BasicDataStatsDto,
-    _runeTags :: [String]
+    _runeMeta :: MetaDataDto
 } deriving (Eq, Show)
 
 makeLenses ''RuneDto
 
 instance FromJSON RuneDto where
     parseJSON (Object o) = RuneDto <$>
-        o .: "colloq"<*>
-        o .: "consumeOnFull"<*>
-        o .: "consumed"<*>
-        o .: "depth"<*>
         o .: "description"<*>
-        o .: "from"<*>
-        o .: "gold"<*>
-        o .: "group"<*>
-        o .: "hideFromAll"<*>
         o .: "id"<*>
-        o .: "image"<*>
-        o .: "inStore"<*>
-        o .: "into"<*>
-        o .: "maps"<*>
         o .: "name"<*>
-        o .: "plaintext"<*>
-        o .: "requiredChampion"<*>
-        o .: "rune"<*>
-        o .: "sanitizedDescription"<*>
-        o .: "specialRecipe"<*>
-        o .: "stacks"<*>
-        o .: "stats"<*>
-        o .: "tags"
+        o .: "rune"
     parseJSON _ = mzero
 
 data RuneListDto = RuneListDto {
@@ -639,58 +655,22 @@ instance FromJSON RuneListDto where
     parseJSON _ = mzero
 
 data SummonerSpellDto = SummonerSpellDto {
-    _summonerSpellCooldown :: [Double],
-    _summonerSpellCooldownBurn :: String,
-    _summonerSpellCost :: [Int],
-    _summonerSpellCostBurn :: String,
-    _summonerSpellCostType :: String,
     _summonerSpellDescription :: String,
-    _summonerSpellEffect :: [[Double]],
-    _summonerSpellEffectBurn :: [String],
     _summonerSpellId :: Int,
-    _summonerSpellImage :: ImageDto,
     _summonerSpellKey :: String,
-    _summonerSpellLeveltip :: LevelTipDto,
-    _summonerSpellMaxrank :: Int,
-    _summonerSpellModes :: [String],
     _summonerSpellName :: String,
-    _summonerSpellRange :: Either [Int] String,
-    _summonerSpellRangeBurn :: String,
-    _summonerSpellResource :: String,
-    _summonerSpellSanitizedDescription :: String,
-    _summonerSpellSanitizedTooltip :: String,
-    _summonerSpellSummonerLevel :: Int,
-    _summonerSpellTooltip :: String,
-    _summonerSpellVars :: [SpellVarsDto]
+    _summonerSpellSummonerLevel :: Int
 } deriving (Eq, Show)
 
 makeLenses ''SummonerSpellDto
 
 instance FromJSON SummonerSpellDto where
     parseJSON (Object o) = SummonerSpellDto <$>
-        o .: "cooldown"<*>
-        o .: "cooldownBurn"<*>
-        o .: "cost"<*>
-        o .: "costBurn"<*>
-        o .: "costType"<*>
         o .: "description"<*>
-        o .: "effect"<*>
-        o .: "effectBurn"<*>
         o .: "id"<*>
-        o .: "image"<*>
         o .: "key"<*>
-        o .: "leveltip"<*>
-        o .: "maxrank"<*>
-        o .: "modes"<*>
         o .: "name"<*>
-        o .: "range"<*>
-        o .: "rangeBurn"<*>
-        o .: "resource"<*>
-        o .: "sanitizedDescription"<*>
-        o .: "sanitizedTooltip"<*>
-        o .: "summonerLevel"<*>
-        o .: "tooltip"<*>
-        o .: "vars"
+        o .: "summonerLevel"
     parseJSON _ = mzero
 
 data SummonerSpellListDto = SummonerSpellListDto {
